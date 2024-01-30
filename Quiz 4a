@@ -1,0 +1,26 @@
+set.seed(42)
+
+# Simulating true heights
+true_heights <- rnorm(20, mean = 170, sd = 10)
+
+# Simulating measurement errors for Edward, Hugo, and Lucy
+edward_errors <- rnorm(20, mean = 0, sd = 1)
+hugo_errors <- rnorm(20, mean = 0, sd = 1.5)
+lucy_errors <- rnorm(20, mean = 0, sd = 1.3)
+
+# Applying errors to true heights
+edward_heights <- true_heights + edward_errors
+hugo_heights <- true_heights + hugo_errors
+lucy_heights <- true_heights + lucy_errors
+
+# Creating a data frame
+measurements <- tibble(
+  Friend = 1:20,
+  Edward = edward_heights,
+  Hugo = hugo_heights,
+  Lucy = lucy_heights
+)
+
+# Melting data for plotting
+measurements_long <- measurements %>%
+  pivot_longer(-Friend, names_to = "Measured_By", values_to = "Height")
