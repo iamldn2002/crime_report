@@ -20,7 +20,3 @@ measurements <- tibble(
   Hugo = hugo_heights,
   Lucy = lucy_heights
 )
-
-# Melting data for plotting
-measurements_long <- measurements %>%
-  pivot_longer(-Friend, names_to = "Measured_By", values_to = "Height")
