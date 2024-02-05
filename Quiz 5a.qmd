@@ -1,0 +1,63 @@
+---
+title: "Quiz 5a"
+format: html
+author: Dingning Li
+---
+
+```{r}
+set.seed(123) # For reproducibility
+
+# Simulate the number of pages read by each undergraduate per day
+days <- 100
+matt <- rnorm(days, mean=50, sd=10)
+ash <- rnorm(days, mean=50, sd=10)
+jacki <- rnorm(days, mean=50, sd=10)
+rol <- rnorm(days, mean=50, sd=10)
+mike <- rnorm(days, mean=50, sd=10)
+
+# Assuming Ash and Jacki are a couple, making Ash's readings positively correlated with Jacki's
+ash <- jacki + rnorm(days, mean=0, sd=5)
+
+# Combine into a data frame
+readings <- data.frame(day=1:days, matt=matt, ash=ash, jacki=jacki, rol=rol, mike=mike)
+
+#write a csv file
+write.csv(readings, file = "readings.csv")
+
+# Example tests - replace with your specific tests
+# Test 1: Summary of readings by Matt
+summary(readings$matt)
+
+# Test 2: Correlation between Ash and Jacki
+cor(readings$ash, readings$jacki)
+
+# Test 3: Average pages read per day by all undergraduates
+colMeans(readings[,-1])
+
+# Test 4: Days with more than 60 pages read by Matt
+length(which(readings$matt > 60))
+
+# Test 5: Linear model of Ash's readings as a function of Jacki's
+lm_ash_jacki <- lm(ash ~ jacki, data=readings)
+summary(lm_ash_jacki)
+
+```
+
+
+
+```{r}
+#Graph
+library(ggplot2)
+
+# Melting the data for use with ggplot
+library(reshape2)
+readings_melted <- melt(readings, id.vars="day", variable.name="student", value.name="pages")
+
+# Plotting
+ggplot(readings_melted, aes(x=day, y=pages, color=student)) +
+  geom_line() +
+  labs(title="Daily Reading Trends of Undergraduates", x="Day", y="Pages Read") +
+  theme_minimal()
+
+```
+
