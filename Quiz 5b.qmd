@@ -1,0 +1,69 @@
+---
+title: "Quiz 5b"
+author: "Dingning Li"
+format: html
+---
+
+```{r}
+set.seed(42) # For reproducible results
+
+# Time frame
+weeks <- 1:26 # 26 weeks in 6 months
+
+# Simulating approval ratings and vote-shares
+approval_ratings <- pmin(pmax(rnorm(26, 50, 5) + sin(weeks/2) * 3, 0), 100)
+vote_shares <- pmin(pmax(approval_ratings + rnorm(26, 0, 3) - 2, 0), 100)
+
+# Debates impact
+debate_weeks <- c(8, 16, 24)
+for (week in debate_weeks) {
+  approval_ratings[week] <- pmin(approval_ratings[week] + sample(5:10, 1), 100)
+  vote_shares[week] <- pmin(vote_shares[week] + sample(3:7, 1), 100)
+}
+
+# Creating a dataframe
+data <- data.frame(Week = weeks, Approval_Rating = approval_ratings, Vote_Share = vote_shares)
+
+# Write a csv file
+write.csv(data, file = "data.csv")
+```
+
+
+```{r}
+# Paired t-tests for approval ratings and vote-shares around debates
+t.test(data$Approval_Rating[debate_weeks - 1], data$Approval_Rating[debate_weeks], paired = TRUE)
+t.test(data$Vote_Share[debate_weeks - 1], data$Vote_Share[debate_weeks], paired = TRUE)
+
+# Pearson correlation test
+cor.test(data$Approval_Rating, data$Vote_Share)
+
+# Comparing post-debate week with the following week
+t.test(data$Approval_Rating[debate_weeks], data$Approval_Rating[debate_weeks + 1], paired = TRUE)
+t.test(data$Vote_Share[debate_weeks], data$Vote_Share[debate_weeks + 1], paired = TRUE)
+
+
+```
+
+```{r}
+# Make a Graph
+
+library(ggplot2)
+
+# Creating the plot
+p <- ggplot(data, aes(x = Week)) + 
+  geom_line(aes(y = Approval_Rating, colour = "Approval Rating"), size = 1) + 
+  geom_line(aes(y = Vote_Share, colour = "Vote-Share"), size = 1, linetype = "dashed") +
+  scale_colour_manual(values = c("Approval Rating" = "blue", "Vote-Share" = "orange")) +
+  geom_vline(xintercept = c(8, 16, 24), linetype = "dotted", colour = "red", size = 1) +
+  theme_minimal() +
+  labs(title = "Approval Rating and Vote-Share Over Time",
+       x = "Week",
+       y = "Percentage",
+       colour = "Metric") +
+  theme(legend.position = "bottom")
+
+# Displaying the plot
+print(p)
+
+```
+
